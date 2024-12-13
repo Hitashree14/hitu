@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#noteTitle, #noteContent {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+#addNoteBtn {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#addNoteBtn:hover {
+  background-color: #0056b3;
+}
+
+.note {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.note h3 {
+  margin: 0 0 10px 0;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #a71d2a;
+}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Notes App</h1>
+    <div class="note-form">
+      <input type="text" id="noteTitle" placeholder="Note Title">
+      <textarea id="noteContent" placeholder="Note Content"></textarea>
+      <button id="addNoteBtn">Add Note</button>
+    </div>
+    <h2>Saved Notes</h2>
+    <div id="notesContainer"></div>
+  </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const noteTitle = document.getElementById("noteTitle");
+  const noteContent = document.getElementById("noteContent");
+  const addNoteBtn = document.getElementById("addNoteBtn");
+  const notesContainer = document.getElementById("notesContainer");
+
+  // Load notes from localStorage
+  const loadNotes = () => {
+    const notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notesContainer.innerHTML = "";
+    notes.forEach((note, index) => addNoteToDOM(note, index));
+  };
+
+  // Add a note to DOM
+  const addNoteToDOM = (note, index) => {
+    const noteDiv = document.createElement("div");
+    noteDiv.className = "note";
+    noteDiv.innerHTML = `
+      <h3>${note.title}</h3>
+      <p>${note.content}</p>
+      <button class="delete-btn" onclick="deleteNote(${index})">Delete</button>
+    `;
+    notesContainer.appendChild(noteDiv);
+  };
+
+  // Save notes to localStorage
+  const saveNotes = (notes) => {
+    localStorage.setItem("notes", JSON.stringify(notes));
+    loadNotes();
+  };
+
+  // Add a new note
+  addNoteBtn.addEventListener("click", () => {
+    const title = noteTitle.value.trim();
+    const content = noteContent.value.trim();
+
+    if (title && content) {
+      const notes = JSON.parse(localStorage.getItem("notes")) || [];
+      notes.push({ title, content });
+      saveNotes(notes);
+      noteTitle.value = "";
+      noteContent.value = "";
+    } else {
+      alert("Please enter both title and content!");
+    }
+  });
+
+  // Delete a note
+  window.deleteNote = (index) => {
+    const notes = JSON.parse(localStorage.getItem("notes")) || [];
+    notes.splice(index, 1);
+    saveNotes(notes);
+  };
+
+  // Initialize
+  loadNotes();
+});
+
+</script>
+</body>
+</html>
